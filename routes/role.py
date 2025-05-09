@@ -20,7 +20,7 @@ def get_db():
 dbDep = Annotated[Session, Depends(get_db)]
 
 class RoleCreate(BaseModel):
-    name: str = Field(..., min_length=3, max_length=20)
+    name: str = Field(..., min_length=3, max_length=50)
     desc: str 
 
 @role_router.post("/role", status_code=201)
@@ -34,12 +34,6 @@ async def role(db:dbDep, role: RoleCreate):
 @role_router.get("/", status_code=200)
 async def role(db: dbDep):
     roles = db.query(Role).order_by(Role.name).all()
-    # all_roles = []
-    # for role in roles:
-    #     all_roles.append({
-    #         'role': role.name,
-    #         'description': role.desc
-    #     })
 
     return [{"role": role.name,"description": role.desc } for role in roles]
 
@@ -58,7 +52,7 @@ async def role(db: dbDep, role_req: RoleCreate, role_id: int = Path(..., gt=0)):
 async def role(db: dbDep, role_id: int = Path(..., gt=0)):
     role = db.query(Role).filter(Role.id == role_id).first()
     db.delete(role)
-    db.commit
-    return {"role succesfully deleted"}
+    db.commit()
+    return {"successful deleted a role"}
  
 

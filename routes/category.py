@@ -21,6 +21,7 @@ dbDep = Annotated[Session, Depends(get_db)]
 
 class CategoryCreate(BaseModel):
     name: str = Field(..., min_length=3, max_length=30)
+    description: str | None = None
 
 @category_router.get("/")
 async def category(db: dbDep):
@@ -44,11 +45,13 @@ async def category(db:dbDep, category: CategoryCreate):
     db.add(new_category)
     db.commit()
 
-@category_router.put("/category")
+@category_router.put("/category/{category_id}")
 async def category(db: dbDep, category_req: CategoryCreate, category_id: int = Path(..., gt=0)):
     category = db.query(Category).filter(Category.id == category_id).first()
     if category is None:
         raise HTTPException(status_code=404, detail="Catgory not found, Check again!")
     category.name = category_req.name
+    category.description = category_req.description
     db.add(category)
     db.commit()
+    return{"category updated succesfully"}

@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, Path, status
 from sqlalchemy.orm import Session, joinedload
 from database import engine, SessionLocal
 from models import model
-from models.model import Order
+from models.model import Order, Customer
 from pydantic import BaseModel, Field
 from typing import Annotated
+from datetime import datetime
 
 
 order_router = APIRouter()
@@ -20,8 +21,24 @@ def get_db():
 dbDep = Annotated[Session, Depends(get_db)]
 
 class OrderCreate(BaseModel):
-    date_of_order: str = Field(...,)
-    details: str |  None = None
+    date_of_order: datetime = Field(...,)
+    order_details: str |  None = None
+    customer_id: int
+
+
+
+@order_router.post("/order", status_code=200)
+async def order(db:dbDep, order:OrderCreate ):
+    customer = db.query(Customer).filter(Customer.id == order.customer_id).first()
+    if customer is None:
+        raise HTTPException(status_code=404, detail="Customer not found, Please check again")
+    new_order = Order(**order.dict())
+    db.add(new_order)
+    db.commit()
+    return {
+        "message": "Order successfully created!",
+        "order_id": new_order.id
+    }
 
 @order_router.get("/")
 async def order(db:dbDep):
@@ -43,19 +60,14 @@ async def order(db:dbDep, order_id: int = Path(..., gt=0)):
     }
 
 
-@order_router.post("/order", status_code=200)
-async def order(db:dbDep, order:OrderCreate ):
-    new_order = Order(**order.dict())
-    db.add(new_order)
-    db.commit()
 
-@order_router.put("/order", status_code=200)
+@order_router.put("/order/{order_id}", status_code=200)
 async def order(db:dbDep, order_req: OrderCreate, order_id: int = Path(..., gt=0)):
     order = db.query(Order).filter(Order.id == order_id).first()
     if order is None:
         raise HTTPException(status_code=404, detail="Order Not Found, Please check again")
     
-    order.order_details = order_req.details
+    order.order_details = order_req.order_details
     db.add(order)
     db.commit()
     return{

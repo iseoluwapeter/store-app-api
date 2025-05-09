@@ -19,7 +19,7 @@ class Role(Base):
     name = Column(String)
     desc = Column(String)
 
-    staff = relationship("Staff", back_populates="role")
+    staff_members = relationship("Staff", back_populates="role")
 
 class Staff(Base):
     __tablename__ = "staff"
@@ -33,8 +33,8 @@ class Staff(Base):
     password = Column(String, unique=True)
     role_id = Column(Integer, ForeignKey("role.id"))  
 
-    role = relationship("Role", back_populates="staff")
-    customer = relationship("Customer", back_populates="staff") 
+    role = relationship("Role", back_populates="staff_members")
+    customers = relationship("Customer", back_populates="staff") 
 
 
 class Customer(Base):
@@ -48,28 +48,32 @@ class Customer(Base):
     staff_id = Column(Integer, ForeignKey("staff.id"))
 
     staff = relationship("Staff", back_populates="customers")
-    orders = relationship("Order", back_populates="customers")
+    orders = relationship("Order", back_populates="customer")
 
 class Category(Base):
     __tablename__ = "categories"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
+    description = Column(String)
+
+    products = relationship("Product", back_populates="category")
+
+class Product(Base):
+    __tablename__ = "products"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    desc = Column(String)
+    unit = Column(String)
+    price = Column(Float)
+    quantity = Column(Integer)
+    status = Column(Integer)
+    other_details = Column(String)
+    supplier_id = Column(Integer, ForeignKey("suppliers.id"))
+    category_id = Column(Integer, ForeignKey("categories.id"))
  
 
-# #     # products = relationship("Product", back_populates="category")
-
-# class Product(Base):
-#     __tablename__ = "products"
-#     id = Column(Integer, primary_key=True, index=True)
-#     name = Column(String)
-#     desc = Column(String)
-#     price = Column(Float)
-#     stock = Column(Integer)
-#     catgory_id = Column(Integer, ForeignKey("categories.id"))
- 
-
-# #     # category = relationship("Category", back_populates="products")
-# #     # orders = relationship("Order", back_populates="product")
+    category = relationship("Category", back_populates="products")
+    orderdetails = relationship("OrderDetail", back_populates="product")
 
 class Order(Base):
     __tablename__ = "orders"
@@ -78,24 +82,31 @@ class Order(Base):
     order_details = Column(String)
     customer_id = Column(Integer, ForeignKey("customers.id"))
 
-    customer = relationship("Customer", back_populates=("orders"))
-# #     # customer = relationship("Customer", back_populates="orders")
-# #     # product = relationship("Product", back_populates="orders")
+    customer = relationship("Customer", back_populates="orders")
+    orderdetails = relationship("OrderDetail", back_populates="order")
 
-# class OrderDetail(Base):
-#     __tablename__ = "orderdetail"
-#     id= Column(Integer, primary_key=True, index=True)
-#     unit_price= Column(Float)
-#     size = Column(Integer,)
-#     Quantity = Column(Integer)
-#     Discount = Column(Integer)
-#     Total = Column(Integer)
-#     date = Column(DateTime, default=datetime.datetime.utcnow)
-#     product_id = Column(Integer, ForeignKey("products.id"))  
-#     order_id = Column(Integer, ForeignKey("orders.id"))
 
-# class Payment(Base):
-#     __tablename__ ="payment"
-#     bill_number = Column(Integer, primary_key=True, index=True)
-#     payment_type = Column(String)
-#     other_details = Column(String)  
+class OrderDetail(Base):
+    __tablename__ = "orderdetail"
+    id= Column(Integer, primary_key=True, index=True)
+    unit_price= Column(Float)
+    size = Column(Integer)
+    quantity = Column(Integer)
+    discount = Column(Integer)
+    total = Column(Float)
+    date = Column(DateTime, default=datetime.datetime.utcnow)
+    product_id = Column(Integer, ForeignKey("products.id"))  
+    order_id = Column(Integer, ForeignKey("orders.id"))
+    bill_number = Column(Integer, ForeignKey("payment.bill_number"))
+
+    product = relationship("Product", back_populates="orderdetails")
+    payment = relationship("Payment", back_populates="orderdetails")
+    order = relationship("Order", back_populates="orderdetails")
+
+class Payment(Base):
+    __tablename__ ="payment"
+    bill_number = Column(Integer, primary_key=True, index=True)
+    payment_type = Column(String)
+    other_details = Column(String) 
+
+    orderdetails = relationship("OrderDetail", back_populates="payment") 
