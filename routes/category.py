@@ -25,7 +25,7 @@ class CategoryCreate(BaseModel):
 
 @category_router.get("/")
 async def category(db: dbDep):
-    category_list = db.query(Category).order_by(Category.name).all()
+    category_list = db.query(Category).order_by(Category.id).all()
     if category is None:
         raise HTTPException(status_code=404, detail="Category Does not Exist")
     

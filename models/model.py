@@ -17,7 +17,7 @@ class Role(Base):
     __tablename__ = "role"
     id = Column(Integer, primary_key=True, index= True)
     name = Column(String)
-    desc = Column(String)
+    description = Column(String)
 
     staff_members = relationship("Staff", back_populates="role")
 
@@ -63,10 +63,9 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     desc = Column(String)
-    unit = Column(String)
+    unit = Column(Integer)
     price = Column(Float)
-    quantity = Column(Integer)
-    status = Column(Integer)
+    status = Column(Boolean)
     other_details = Column(String)
     supplier_id = Column(Integer, ForeignKey("suppliers.id"))
     category_id = Column(Integer, ForeignKey("categories.id"))
@@ -79,7 +78,6 @@ class Order(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True, index=True)
     date_of_order = Column(DateTime)
-    order_details = Column(String)
     customer_id = Column(Integer, ForeignKey("customers.id"))
 
     customer = relationship("Customer", back_populates="orders")
@@ -90,7 +88,6 @@ class OrderDetail(Base):
     __tablename__ = "orderdetail"
     id= Column(Integer, primary_key=True, index=True)
     unit_price= Column(Float)
-    size = Column(Integer)
     quantity = Column(Integer)
     discount = Column(Integer)
     total = Column(Float)

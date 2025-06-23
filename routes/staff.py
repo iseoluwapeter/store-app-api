@@ -33,7 +33,7 @@ class StaffCreate(BaseModel):
 
 @staff_router.get("/")
 async def list_staff(db: dbDep):
-    staff_list = db.query(Staff).order_by(Staff.firstname).all()
+    staff_list = db.query(Staff).order_by(Staff.id).all()
     return staff_list
 
 @staff_router.get("/staff/{staff_id}")

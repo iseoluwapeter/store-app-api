@@ -4,6 +4,7 @@ from models.model import Customer, Staff
 from typing import Annotated
 from pydantic import BaseModel, Field
 from database import SessionLocal
+# from .auth import get_current_user
 
 customer_router = APIRouter()
 
@@ -16,13 +17,14 @@ def get_db():
         db.close()
 
 dbDep = Annotated[Session, Depends(get_db)]
+# cust-depend = Annotated[dict, Depends(get_current_user)]
 
 # Pydantic model for customer creation input
 class CustomerCreate(BaseModel):
     firstname: str = Field(..., min_length=3, max_length=30)
     lastname: str = Field(..., min_length=3, max_length=30)
     address: str
-    phone: int
+    phone: str
     email: str = Field(..., min_length=8)
     staff_id: int
 
@@ -51,18 +53,10 @@ async def create_customer(db: dbDep, customer: CustomerCreate):
 
 @customer_router.get("/")
 async def get_all_customers(db:dbDep):
-    customers = db.query(Customer).order_by(Customer.firstname).all()
-    cust = []
-    for customer in customers:
-        cust.append({
-            'Surname': customer.lastname,
-            'Firstname': customer.firstname,
-            'email': customer.email,
-            'Phone': customer.phone
+    customers = db.query(Customer).order_by(Customer.id).all()
+    
 
-        })
-
-    return cust
+    return customers
 
 @customer_router.get("/customer/{customer_id}")
 async def get_customer_by_Id(db:dbDep, customer_id: int = Path(..., gt=0)):
@@ -71,6 +65,8 @@ async def get_customer_by_Id(db:dbDep, customer_id: int = Path(..., gt=0)):
         raise HTTPException(status_code=404, detail="User does not exist")
     
     return customer
+
+
 
 
 

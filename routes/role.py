@@ -21,7 +21,7 @@ dbDep = Annotated[Session, Depends(get_db)]
 
 class RoleCreate(BaseModel):
     name: str = Field(..., min_length=3, max_length=50)
-    desc: str 
+    description: str 
 
 @role_router.post("/role", status_code=201)
 async def role(db:dbDep, role: RoleCreate):
@@ -33,9 +33,9 @@ async def role(db:dbDep, role: RoleCreate):
 
 @role_router.get("/", status_code=200)
 async def role(db: dbDep):
-    roles = db.query(Role).order_by(Role.name).all()
+    roles = db.query(Role).order_by(Role.id).all()
 
-    return [{"role": role.name,"description": role.desc } for role in roles]
+    return roles
 
 @role_router.put("/role/{role_id}", status_code=201)
 async def role(db: dbDep, role_req: RoleCreate, role_id: int = Path(..., gt=0)):
@@ -43,7 +43,7 @@ async def role(db: dbDep, role_req: RoleCreate, role_id: int = Path(..., gt=0)):
     if role is None:
         raise HTTPException(status_code=404, detail="Role not found, Check again!")
     role.name = role_req.name
-    role.desc = role_req.desc
+    role.description = role_req.description
     db.add(role)
     db.commit()
     return{" Role succesfully updated"}

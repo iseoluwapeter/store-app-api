@@ -39,11 +39,27 @@ async def supplier(db:dbDep, supplier: SupplierCreate ):
 
 @supplier_router.get("/", status_code=200)
 async def supplier(db: dbDep):
-    suppliers = db.query(Supplier).order_by(Supplier.name).all()
+    suppliers = db.query(Supplier).order_by(Supplier.id).all()
 
-    return [{"role": supplier.name,"description": supplier.email } for supplier in suppliers]
+    return suppliers
 
-@supplier_router.put("/role/{supplier_id}", status_code=201)
+@supplier_router.get("/supplier/{supplier_id}")
+async def supplier( db:dbDep, supplier_id: int = Path(..., gt=0)):
+    single_supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+    if not single_supplier:
+        raise HTTPException(status_code=404, detail="Supplier Not Found")
+    return single_supplier
+
+# @product_router.get("/product/{product_id}", status_code=200)
+# async def product(db: dbDep, product_id: int = Path(..., gt=0)):
+#     product = db.query(Product).filter(Product.id == product_id).first()
+
+#     if product is None:
+#          raise HTTPException(status_code=404, detail="product not found!")
+
+#     return product
+
+@supplier_router.put("/supplier/{supplier_id}", status_code=201)
 async def supplier(db: dbDep, supplier_req: SupplierCreate, supplier_id: int = Path(..., gt=0)):
     supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
     if supplier is None:
@@ -57,9 +73,11 @@ async def supplier(db: dbDep, supplier_req: SupplierCreate, supplier_id: int = P
     db.commit()
     return{" Supplier succesfully updated"}
 
-@supplier_router.delete("/role/{supplier_id}" ,status_code=200)
+@supplier_router.delete("/supplier/{supplier_id}" ,status_code=200)
 async def supplier(db: dbDep, supplier_id: int = Path(..., gt=0)):
     supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+    if not supplier:
+        raise HTTPException(status_code=404, detail="Supplier does not exist please check again")
     db.delete(supplier)
     db.commit()
-    return {"successful deleted a role"}
+    return {"successful deleted a supplier"}

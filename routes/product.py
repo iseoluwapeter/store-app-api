@@ -24,10 +24,9 @@ dbDep = Annotated[Session, Depends(get_db)]
 class ProductCreate(BaseModel):
     name: str = Field(..., min_length=2)
     desc: str
-    unit: str
+    unit: int
     price: float
-    quantity: int
-    status: int
+    status: bool
     other_details: str| None = None
     supplier_id : int
     category_id: int
@@ -58,7 +57,7 @@ async def create_product(product: ProductCreate, db: Session = Depends(get_db)):
 
 @product_router.get("/", status_code=200)
 async def product(db: dbDep):
-    products = db.query(Product).order_by(Product.name).all()
+    products = db.query(Product).order_by(Product.id).all()
 
     return products
 
@@ -80,7 +79,6 @@ async def product(db: dbDep, product_req: ProductCreate, product_id: int = Path(
     product.desc = product_req.desc
     product.unit = product_req.unit
     product.price = product_req.price
-    product.quantity = product_req.quantity
     product.status = product_req.status
     product.other_details = product_req.other_details
 
