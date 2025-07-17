@@ -6,6 +6,7 @@ from models.model import Order, Customer
 from pydantic import BaseModel, Field
 from typing import Annotated
 from datetime import datetime
+from routes.auth import get_current_user
 
 
 order_router = APIRouter()
@@ -19,6 +20,7 @@ def get_db():
         db.close()
 
 dbDep = Annotated[Session, Depends(get_db)]
+logDep = Annotated[Session, Depends(get_current_user)]
 
 class OrderCreate(BaseModel):
     customer_id: int
@@ -27,18 +29,6 @@ class OrderCreate(BaseModel):
 
 
 @order_router.post("/order", status_code=200)
-# async def order(db:dbDep, order:OrderCreate ):
-#     customer = db.query(Customer).filter(Customer.id == order.customer_id).first()
-#     if customer is None:
-#         raise HTTPException(status_code=404, detail="Customer not found, Please check again")
-#     new_order = Order(**order.dict())
-#     db.add(new_order)
-#     db.commit()
-#     return {
-#         "message": "Order successfully created!",
-#         "order_id": new_order.id
-#     }
-
 async def create_order(order: OrderCreate, db: dbDep):
     customer = db.query(Customer).filter(Customer.id == order.customer_id).first()
     if not customer:

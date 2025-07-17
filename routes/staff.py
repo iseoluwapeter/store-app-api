@@ -20,6 +20,7 @@ def get_db():
         db.close()
 
 dbDep = Annotated[Session, Depends(get_db)]
+lgDep = Annotated[Session, Depends()]
 
 class StaffCreate(BaseModel):
     firstname: str = Field(..., min_length=2)

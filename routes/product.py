@@ -23,7 +23,7 @@ dbDep = Annotated[Session, Depends(get_db)]
 
 class ProductCreate(BaseModel):
     name: str = Field(..., min_length=2)
-    desc: str
+    description: str
     unit: int
     price: float
     status: bool
@@ -76,7 +76,7 @@ async def product(db: dbDep, product_req: ProductCreate, product_id: int = Path(
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found, Check again!")
     product.name = product_req.name
-    product.desc = product_req.desc
+    product.description = product_req.desc
     product.unit = product_req.unit
     product.price = product_req.price
     product.status = product_req.status

@@ -6,7 +6,22 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL")
-engine =  create_engine(SQLALCHEMY_DATABASE_URL)
+user = os.getenv("DB_USER")
+password = os.getenv("DB_PASS")
+host = os.getenv("DB_HOST")
+port = os.getenv("DB_PORT")
+db = os.getenv("DB_NAME")
+ca_path = os.getenv("DB_CA")
+
+SQLALCHEMY_DATABASE_URL = (
+    f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}?ssl_ca={ca_path}"
+)
+
+engine = create_engine(
+    f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}",
+    connect_args={
+        "ssl": {"ca": ca_path}
+    }
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

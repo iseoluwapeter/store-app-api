@@ -7,30 +7,30 @@ import datetime
 class Supplier(Base):
     __tablename__ = "suppliers"
     id = Column(Integer, primary_key = True, index = True)
-    name = Column(String)
-    address = Column(String)
-    phone = Column(Integer)
-    email = Column(String)
-    other_details = Column(String)
+    name = Column(String(100))
+    address = Column(String (100))
+    phone = Column(String(20))
+    email = Column(String (50))
+    other_details = Column(String(255))
 
 class Role(Base):
     __tablename__ = "role"
     id = Column(Integer, primary_key=True, index= True)
-    name = Column(String)
-    description = Column(String)
+    name = Column(String(100))
+    description = Column(String(100))
 
     staff_members = relationship("Staff", back_populates="role")
 
 class Staff(Base):
     __tablename__ = "staff"
     id = Column(Integer, primary_key=True, index=True)
-    firstname = Column(String)
-    lastname = Column(String)
-    address=  Column(String)
-    phone = Column(String)
-    email= Column(String)
-    username = Column(String, unique=True)
-    password = Column(String, unique=True)
+    firstname = Column(String(100))
+    lastname = Column(String(100))
+    address=  Column(String(100))
+    phone = Column(String(100))
+    email= Column(String(100))
+    username = Column(String(100), unique=True)
+    password = Column(String(100), unique=True)
     role_id = Column(Integer, ForeignKey("role.id"))  
 
     role = relationship("Role", back_populates="staff_members")
@@ -40,11 +40,11 @@ class Staff(Base):
 class Customer(Base):
     __tablename__ = "customers"
     id = Column(Integer, primary_key=True, index=True)
-    firstname = Column(String)
-    lastname = Column(String)
-    address = Column(String)
-    phone = Column(String)
-    email = Column(String, unique=True)
+    firstname = Column(String(100))
+    lastname = Column(String(100))
+    address = Column(String(100))
+    phone = Column(String(100))
+    email = Column(String(100), unique=True)
     staff_id = Column(Integer, ForeignKey("staff.id"))
 
     staff = relationship("Staff", back_populates="customers")
@@ -53,20 +53,20 @@ class Customer(Base):
 class Category(Base):
     __tablename__ = "categories"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True)
-    description = Column(String)
+    name = Column(String(100), unique=True)
+    description = Column(String(100))
 
     products = relationship("Product", back_populates="category")
 
 class Product(Base):
     __tablename__ = "products"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    desc = Column(String)
+    name = Column(String(100))
+    description = Column(String(100))
     unit = Column(Integer)
     price = Column(Float)
     status = Column(Boolean)
-    other_details = Column(String)
+    other_details = Column(String(100))
     supplier_id = Column(Integer, ForeignKey("suppliers.id"))
     category_id = Column(Integer, ForeignKey("categories.id"))
  
@@ -103,7 +103,7 @@ class OrderDetail(Base):
 class Payment(Base):
     __tablename__ ="payment"
     bill_number = Column(Integer, primary_key=True, index=True)
-    payment_type = Column(String)
-    other_details = Column(String) 
+    payment_type = Column(String(100))
+    other_details = Column(String(100)) 
 
     orderdetails = relationship("OrderDetail", back_populates="payment") 
