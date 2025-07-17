@@ -11,15 +11,18 @@ password = os.getenv("DB_PASS")
 host = os.getenv("DB_HOST")
 port = os.getenv("DB_PORT")
 db = os.getenv("DB_NAME")
-ca_path = os.getenv("DB_CA", "ca.pem")  
+ca_path = os.getenv("DB_CA", "ca.pem")  # fallback if not set
 on_render = os.getenv("RENDER", "false").lower() == "true"
-
 
 SQLALCHEMY_DATABASE_URL = (
     f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}?ssl_ca={ca_path}"
 )
 
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+connect_args = {"ssl": {"ca": ca_path}} if not on_render else {}
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=connect_args)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 Base = declarative_base()

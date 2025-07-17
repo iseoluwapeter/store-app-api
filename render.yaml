@@ -2,7 +2,7 @@ services:
   - type: web
     name: fastapi-app
     runtime: python
-    buildCommand: ./build.sh && pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && ./build.sh
     startCommand: uvicorn main:app --host=0.0.0.0 --port=10000
     envVars:
       - key: DB_USER
