@@ -2,7 +2,7 @@ services:
   - type: web
     name: fastapi-app
     runtime: python
-    buildCommand: pip install -r requirements.txt && ./build.sh
+    buildCommand: ./build.sh && pip install -r requirements.txt
     startCommand: uvicorn main:app --host=0.0.0.0 --port=10000
     envVars:
       - key: DB_USER
@@ -23,3 +23,6 @@ services:
         value: KJBCIJBWJU6674r2ghjhj*7nkhhloi
       - key: FRONTEND_URL
         value: https://inventory-one-wheat.vercel.app/
+      - key: PIP_INSTALL
+        value: true
+
