@@ -3,16 +3,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes import customer, role, staff, category,  order, supplier, product, payment, orderdetails, auth
 from database import Base, engine
 import os
+from dotenv import load_dotenv 
+
+load_dotenv()
 
 app = FastAPI()
 
 
 
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5174")
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+print("frontend_url for CORS:", frontend_url)
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[frontend_url, "http://localhost:5174"],
+    allow_origins=[frontend_url, "http://localhost:5173"],
     allow_credentials=True,
     allow_headers=["*"],
     allow_methods=["*"]
